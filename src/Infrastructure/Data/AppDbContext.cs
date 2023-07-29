@@ -17,4 +17,6 @@ public class AppDbContext : DbContext, IAppDbContext {
         Log.Logger.Information("OnModelCreating");
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
+    
+    
 }

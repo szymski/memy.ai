@@ -1,4 +1,7 @@
 ﻿using Application.Common.Interfaces;
+using Application.Stories;
+using Domain.Stories.Entities;
+using Domain.Stories.ValueObjects;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -39,6 +42,20 @@ public static class DependencyInjection {
 
         #endregion
 
+        services.AddScoped<IStoryGenerator, StoryGenerator>();
+
         return services;
+    }
+}
+
+public class StoryGenerator : IStoryGenerator {
+
+    public async Task<Story> Generate(StoryGenerationInput input)
+    {
+        return new()
+        {
+            Model = input.Model.ToString(),
+            Preset = "GeneratedPreset",
+        };
     }
 }
