@@ -6,9 +6,10 @@ using Domain.Stories.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using WebApi.Dto;
 
-namespace WebApi.Controllers
-{
+namespace WebApi.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class StoryController : ControllerBase {
@@ -25,22 +26,33 @@ namespace WebApi.Controllers
             var result = await _mediator.Send(new GetAllStoriesQuery());
             return Ok(result);
         }
-        
+
+        /// <summary>
+        /// Gets story by id.
+        /// </summary>
         [HttpGet("{id}")]
         public async ValueTask<ActionResult<Story>> Get(int id)
         {
             var result = await _mediator.Send(new GetStoryQuery(id));
             return result is not null ? Ok(result) : NotFound();
         }
-        
+
+        /// <summary>
+        /// Generates a new story from a preset.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost("generate")]
-        public async ValueTask<ActionResult<Story>> Generate()
+        [Consumes(typeof(GenerateStoryDto), "application/json")]
+        public async ValueTask<ActionResult<Story>> Generate(GenerateStoryDto dto)
         {
+            Log.Logger.Warning("Received generate story request: {@dto}", dto);
+
             var result = await _mediator.Send(new GenerateStoryCommand
             {
                 Input = new StoryGenerationInput(StoryGeneratorModel.Gpt35Turbo, "", ""),
             });
-            return CreatedAtAction(nameof(Get), new {id = result.Id}, result);
+            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
     }
 }

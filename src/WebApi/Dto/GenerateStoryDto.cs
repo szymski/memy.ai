@@ -1,6 +1,10 @@
-﻿namespace WebApi.Dto; 
+﻿using Microsoft.Build.Framework;
+
+namespace WebApi.Dto; 
 
 public class GenerateStoryDto {
-    public string Template { get; set; }
+    [Required]
+    public string Preset { get; set; }
+    [Required]
     public string Prompt { get; set; }
 }
