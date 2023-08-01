@@ -4,5 +4,9 @@ using MediatR;
 namespace Application.Abstractions.Messaging;
 
 public interface IDbRequestHandler {
-    IAppDbContext Context { get; set; }
+     IAppDbContext Context { get; set; }
+}
+
+public abstract class DbRequestHandler : IDbRequestHandler {
+     public IAppDbContext Context { get; set; }
 }
