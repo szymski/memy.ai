@@ -48,6 +48,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MemyAi v1"));
 
     await app.InitializeDb();
+
+    app.UseCors(policyBuilder => {
+        policyBuilder.AllowAnyOrigin();
+    });
 }
 
 app.UseSerilogRequestLogging();

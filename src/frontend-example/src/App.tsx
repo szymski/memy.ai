@@ -2,6 +2,7 @@ import reactLogo from './assets/react.svg'
 import './App.css'
 import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
 import {AuthPage} from "./pages/AuthPage.tsx";
+import {FetchDataPage} from "./pages/FetchDataPage.tsx";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path={"auth"} Component={AuthPage}/>
+          <Route path={"data"} Component={FetchDataPage}/>
           <Route path={"test"} Component={() => (
             <>
               Hello on test!
@@ -26,6 +28,9 @@ function App() {
                 <p>Please navigate to a page: </p>
                 <li>
                   <Link to={"auth"}>Auth</Link>
+                </li>
+                <li>
+                  <Link to={"data"}>Data fetching</Link>
                 </li>
                 <li>
                   <Link to={"test"}>Test</Link>
