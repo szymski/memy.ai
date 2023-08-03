@@ -1,0 +1,14 @@
+﻿.loginBox {
+    margin: auto;
+}
+
+.loginBox input {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.loginBox button {
+    width: 100%;
+}
