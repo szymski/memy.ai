@@ -1,4 +1,4 @@
-﻿using Domain.Stories.Enums;
+using Domain.Stories.Enums;
 
 namespace Domain.Stories.ValueObjects; 
 

@@ -1,41 +1,44 @@
 ﻿using System.Windows.Input;
 using Application.Common.Interfaces;
 using Domain.Stories.Entities;
+using Domain.Stories.Enums;
 using Domain.Stories.ValueObjects;
 using FluentValidation;
 using MediatR;
+using Serilog;
 
 namespace Application.Stories.Commands;
 
-public class GenerateStoryCommand : IRequest<Story> {
-    public required StoryGenerationInput Input { get; init; }
+public class GenerateStoryCommand : IRequest<StoryGenerationOutput> {
+    public StoryGeneratorModel Model { get; set; }
+    public string SystemMessage { get; set; }
+    public string UserMessage { get; set; }
 
-    public class GenerateStoryCommandHandler : IRequestHandler<GenerateStoryCommand, Story> {
-        private readonly IAppDbContext _context;
+    public class GenerateStoryCommandHandler : IRequestHandler<GenerateStoryCommand, StoryGenerationOutput> {
         private readonly IStoryGenerator _generator;
 
-        public GenerateStoryCommandHandler(
-            IAppDbContext context,
-            IStoryGenerator generator)
+        public GenerateStoryCommandHandler(IStoryGenerator generator)
         {
-            _context = context;
             _generator = generator;
         }
 
-        public async Task<Story> Handle(GenerateStoryCommand request, CancellationToken cancellationToken)
+        public async Task<StoryGenerationOutput> Handle(GenerateStoryCommand request, CancellationToken cancellationToken)
         {
-            var story = await _generator.Generate(request.Input);
-            _context.Stories.Add(story);
-            await _context.SaveChangesAsync(cancellationToken);
+            var input = new StoryGenerationInput(request.Model, request.SystemMessage, request.UserMessage);
+            Log.Logger.Warning("Got request to generate story {@input}", input);
+            var story = await _generator.Generate(input);
             return story;
         }
     }
-    
+
     public class GenerateStoryCommandValidator : AbstractValidator<GenerateStoryCommand> {
         public GenerateStoryCommandValidator()
         {
-            RuleFor(x => x.Input.SystemMessage).NotEmpty();
-            RuleFor(x => x.Input.UserMessage).NotEmpty();
+            RuleFor(x => x.Model)
+                .Equal(StoryGeneratorModel.Gpt35Turbo)
+                .WithMessage("GPT-4 disabled for development purposes");
+            RuleFor(x => x.SystemMessage).NotEmpty();
+            RuleFor(x => x.UserMessage).NotEmpty();
         }
     }
 }

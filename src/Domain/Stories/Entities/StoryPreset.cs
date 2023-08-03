@@ -2,7 +2,8 @@
 
 namespace Domain.Stories.Entities; 
 
-public class StoryPreset : BaseEntity {
+// TODO: Keep this in DB and uncomment BaseEntity
+public class StoryPreset /*: BaseEntity*/ {
     
     public string PresetId { get; set; }
     

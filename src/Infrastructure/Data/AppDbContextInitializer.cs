@@ -38,16 +38,19 @@ public class AppDbContextInitializer {
             {
                 Model = StoryGeneratorModel.Gpt35Turbo.ToString(),
                 Preset = "Story 1",
+                Completion = "Completion 1",
             });
             _context.Stories.Add(new()
             {
                 Model = StoryGeneratorModel.Gpt4.ToString(),
                 Preset = "Story 2",
+                Completion = "Sratata",
             });
             _context.Stories.Add(new()
             {
                 Model = "Some random model",
                 Preset = "Preset of a story of id 3",
+                Completion = "Historyjka",
             });
         }
 

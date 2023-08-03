@@ -1,17 +1,23 @@
 using System.Reflection;
 using Application;
 using Application.Stories.Queries;
+using Domain.Stories.Interfaces;
 using Infrastructure;
 using Infrastructure.Data;
+using Infrastructure.Data.Stories;
 using MediatR;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Presentation;
 using Serilog;
+using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => {
+    options.Filters.Add<FluentValidationExceptionFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
@@ -53,7 +59,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 using var scope = app.Services.CreateScope();
-var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-await mediator.Send(new GetStoryQuery(2));
+scope.ServiceProvider.GetRequiredService<IStoryPresetStore>();
+
+// using var scope = app.Services.CreateScope();
+// var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+// await mediator.Send(new GetStoryQuery(2));
 
 app.Run();

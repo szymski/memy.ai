@@ -4,5 +4,5 @@ using Domain.Stories.ValueObjects;
 namespace Application.Stories; 
 
 public interface IStoryGenerator {
-    Task<Story> Generate(StoryGenerationInput input);
+    Task<StoryGenerationOutput> Generate(StoryGenerationInput input);
 }

@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JetClientState">
+    <option name="draftsState">
+      <draftsState>
+        <option name="requests">
+          <list>
+            <requestState>
+              <option name="id" value="58941b63-be76-4e6b-9af5-cbaef50e6ec4" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+            </requestState>
+          </list>
+        </option>
+      </draftsState>
+    </option>
     <option name="id" value="d5cdbe0d-dab5-4771-bc3d-f35d6917005e" />
   </component>
 </project>

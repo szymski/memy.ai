@@ -20,6 +20,10 @@ namespace WebApi.Controllers {
             _mediator = mediator;
         }
 
+        /// <summary>
+        /// Gets all stories.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async ValueTask<ActionResult<List<Story>>> Get()
         {
@@ -27,6 +31,8 @@ namespace WebApi.Controllers {
             return Ok(result);
         }
 
+        private static int i = 0;
+        
         /// <summary>
         /// Gets story by id.
         /// </summary>
@@ -48,9 +54,10 @@ namespace WebApi.Controllers {
         {
             Log.Logger.Warning("Received generate story request: {@dto}", dto);
 
-            var result = await _mediator.Send(new GenerateStoryCommand
+            var result = await _mediator.Send(new GenerateFromPresetRequestCommand()
             {
-                Input = new StoryGenerationInput(StoryGeneratorModel.Gpt35Turbo, "", ""),
+                PresetId = dto.Preset,
+                Prompt = dto.Prompt,
             });
             return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
