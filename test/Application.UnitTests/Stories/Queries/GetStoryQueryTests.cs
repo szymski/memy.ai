@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using Application.Stories.Queries;
 using Application.UnitTests.Helpers;
 using Domain.Stories.Entities;
@@ -22,7 +21,6 @@ public class GetStoryQueryTests {
             },
         };
         var dbSetMock = DbHelper.GetMockDbSet(stories);
-        Debug.WriteLine(dbSetMock.Object.Count());
         var contextMock = new Mock<IAppDbContext>();
         contextMock.Setup(c => c.Stories)
             .Returns(() => dbSetMock.Object);
