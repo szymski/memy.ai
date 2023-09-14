@@ -2,7 +2,6 @@
 using Application.Stories;
 using Domain.Stories.Entities;
 using Domain.Stories.Interfaces;
-using Domain.Stories.ValueObjects;
 using Infrastructure.Data;
 using Infrastructure.Data.Stories;
 using Microsoft.EntityFrameworkCore;
@@ -57,24 +56,8 @@ public static class DependencyInjection {
         
         #endregion
 
-        services.AddScoped<IStoryGenerator, StoryGenerator>();
+        services.AddScoped<IStoryGenerator, TestStoryGenerator>();
 
         return services;
-    }
-}
-
-public class StoryGenerator : IStoryGenerator {
-
-    public async Task<StoryGenerationOutput> Generate(StoryGenerationInput input)
-    {
-        return new()
-        {
-            Model = input.Model.ToString(),
-            UserMessage = input.UserMessage,
-            SystemMessage = input.SystemMessage,
-            Completion = $"This is a test story generated from {input.UserMessage} user message.",
-            TokenStats = new TokenStats(21, 37),
-            TimeTaken = TimeSpan.FromSeconds(5),
-        };
     }
 }
