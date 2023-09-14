@@ -1,0 +1,14 @@
+[
+  {
+    "PresetId": "fanatyk",
+    "Name": "M\u00F3j stary to fanatyk",
+    "SystemMessage": "",
+    "UserMessage": "M\u00F3j stary to fanatyk "
+  },
+  {
+    "PresetId": "test",
+    "Name": "Testowa storka",
+    "SystemMessage": "sys",
+    "UserMessage": ""
+  }
+]

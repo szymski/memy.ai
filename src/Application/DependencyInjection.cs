@@ -35,11 +35,11 @@ public static class DependencyInjection {
         ServiceLifetime serviceLifetime)
     {
         services.Scan(x => x.FromAssemblies(assembly)
-                          .AddClasses(classes => classes.AssignableTo(typeToRegister)
-                                          .Where(t => !t.IsGenericType))
-                          .AsImplementedInterfaces(t => t.IsGenericType
-                                                        && t.GetGenericTypeDefinition() == typeToRegister)
-                          .WithLifetime(serviceLifetime));
+            .AddClasses(classes => classes.AssignableTo(typeToRegister)
+                .Where(t => !t.IsGenericType))
+            .AsImplementedInterfaces(t => t.IsGenericType
+                                          && t.GetGenericTypeDefinition() == typeToRegister)
+            .WithLifetime(serviceLifetime));
         return services;
     }
 }

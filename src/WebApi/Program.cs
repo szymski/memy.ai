@@ -4,9 +4,8 @@ using Application.Stories.Queries;
 using Domain.Stories.Interfaces;
 using Infrastructure;
 using Infrastructure.Data;
-using Infrastructure.Data.Stories;
-using MediatR;
-using Microsoft.AspNetCore.Mvc.Filters;
+using Mapster;
+using Mapster.Utils;
 using Presentation;
 using Serilog;
 using WebApi.Services;
@@ -35,6 +34,12 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
     .AddPresentation();
+
+builder.Services.AddMapster();
+
+var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
+var assembly = Assembly.GetExecutingAssembly();
+typeAdapterConfig.ScanInheritedTypes(assembly);
 
 builder.Host
     .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
