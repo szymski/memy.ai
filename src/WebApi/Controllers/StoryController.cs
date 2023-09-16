@@ -57,7 +57,8 @@ namespace WebApi.Controllers {
             var result = await _mediator.Send(new GenerateFromPresetRequestCommand()
             {
                 PresetId = requestDto.Preset,
-                Prompt = requestDto.Prompt,
+                PromptParts = requestDto.PromptParts,
+                MainPrompt = requestDto.MainPrompt,
             });
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }

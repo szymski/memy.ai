@@ -11,7 +11,8 @@ namespace Application.Stories.Commands;
 
 public class GenerateFromPresetRequestCommand : IRequest<Story> {
     public string PresetId { get; init; }
-    public string Prompt { get; init; }
+    public IEnumerable<string> PromptParts { get; init; }
+    public string MainPrompt { get; init; }
 
     public class GenerateFromPresetRequestCommandHandler : DbRequestHandler, IRequestHandler<GenerateFromPresetRequestCommand, Story> {
         private readonly IMediator _mediator;
@@ -34,7 +35,7 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
             {
                 Model = StoryGeneratorModel.Gpt35Turbo,
                 SystemMessage = $"{preset.SystemMessage} - system msg of {request.PresetId}",
-                UserMessage = $"{preset.UserMessage} {request.Prompt}"
+                UserMessage = $"{preset.UserMessage} {request.MainPrompt}"
             }, cancellationToken);
 
             return new Story()
@@ -53,7 +54,9 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
             RuleFor(x => x.PresetId).NotEmpty()
                 .Must(id => presetStore.GetById(id) is not null)
                 .WithMessage((_, id) => $"No such story preset '{id}'");
-            RuleFor(x => x.Prompt).NotEmpty()
+            RuleFor(x => x.PromptParts).NotNull()
+                .ForEach(x => x.MinimumLength(2));
+            RuleFor(x => x.MainPrompt).NotEmpty()
                 .MinimumLength(3);
         }
     }

@@ -7,5 +7,8 @@ public class GenerateStoryRequestDto {
     public string Preset { get; set; }
 
     [Required]
-    public string Prompt { get; set; }
+    public ICollection<string> PromptParts { get; set; }
+    
+    [Required]
+    public string MainPrompt { get; set; }
 }

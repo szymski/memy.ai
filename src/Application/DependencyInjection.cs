@@ -3,6 +3,7 @@ using Application.Abstractions.Messaging;
 using Application.Common.Messaging.Behaviors;
 using Application.Stories.Queries;
 using Domain.Stories.Entities;
+using Domain.Stories.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,8 @@ public static class DependencyInjection {
     {
         var assembly = typeof(DependencyInjection).Assembly;
 
+        #region MediatR
+
         services.AddValidatorsFromAssembly(assembly);
         services.AddMediatR(configuration => {
                 configuration.Lifetime = ServiceLifetime.Scoped;
@@ -24,6 +27,10 @@ public static class DependencyInjection {
 
         // Ensures all IRequestHandler instances are scoped
         services.AddClosedGenericTypes(assembly, typeof(IRequestHandler<,>), ServiceLifetime.Scoped);
+
+        #endregion
+
+        services.AddScoped<StoryPromptBuilder>();
 
         return services;
     }
