@@ -2,13 +2,13 @@
   {
     "PresetId": "fanatyk",
     "Name": "M\u00F3j stary to fanatyk",
-    "SystemMessage": "",
-    "UserMessage": "M\u00F3j stary to fanatyk "
+    "SystemMessage": "Napisz Mój stary to fanatyk $0.",
+    "UserMessage": "M\u00F3j stary to fanatyk $0"
   },
   {
     "PresetId": "test",
     "Name": "Testowa storka",
-    "SystemMessage": "sys",
-    "UserMessage": ""
+    "SystemMessage": "System message",
+    "UserMessage": "User message $0"
   }
 ]

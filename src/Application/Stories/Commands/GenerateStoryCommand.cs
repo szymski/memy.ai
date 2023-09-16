@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Domain.Stories.Entities;
 using Domain.Stories.Enums;
+using Domain.Stories.Services;
 using Domain.Stories.ValueObjects;
 using FluentValidation;
 using MediatR;
@@ -17,7 +18,7 @@ public class GenerateStoryCommand : IRequest<StoryGenerationOutput> {
     public class GenerateStoryCommandHandler : IRequestHandler<GenerateStoryCommand, StoryGenerationOutput> {
         private readonly IStoryGenerator _generator;
 
-        public GenerateStoryCommandHandler(IStoryGenerator generator)
+        public GenerateStoryCommandHandler(IStoryGenerator generator, StoryPromptBuilder builder)
         {
             _generator = generator;
         }

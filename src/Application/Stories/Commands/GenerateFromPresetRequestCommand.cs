@@ -1,7 +1,9 @@
 ﻿using Application.Abstractions.Messaging;
+using Application.Common.Interfaces;
 using Domain.Stories.Entities;
 using Domain.Stories.Enums;
 using Domain.Stories.Interfaces;
+using Domain.Stories.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -16,35 +18,52 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
 
     public class GenerateFromPresetRequestCommandHandler : DbRequestHandler, IRequestHandler<GenerateFromPresetRequestCommand, Story> {
         private readonly IMediator _mediator;
+        private readonly IAppDbContext _context;
         private readonly IStoryPresetStore _presetStore;
+        private readonly StoryPromptBuilder _builder;
 
         public GenerateFromPresetRequestCommandHandler(
             IMediator mediator,
-            IStoryPresetStore presetStore)
+            IAppDbContext context,
+            IStoryPresetStore presetStore,
+            StoryPromptBuilder builder)
         {
             _mediator = mediator;
+            _context = context;
             _presetStore = presetStore;
+            _builder = builder;
         }
 
         public async Task<Story> Handle(GenerateFromPresetRequestCommand request, CancellationToken cancellationToken)
         {
+            // TODO: Disallow generating multiple stories at the same time or add rate limiter
+            
             var preset = _presetStore.GetById(request.PresetId)!;
-            Log.Logger.Warning("Got request to generate story using preset {@preset}", preset);
+            if (preset is null)
+                throw new ArgumentException($"No such preset '{request.PresetId}'");
+            Log.Logger.Information("Got request to generate story using preset {@preset}", preset);
+
+            var prompt = _builder.BuildPrompt(preset, request.PromptParts.ToArray(), request.MainPrompt);
 
             var output = await _mediator.Send(new GenerateStoryCommand()
             {
                 Model = StoryGeneratorModel.Gpt35Turbo,
-                SystemMessage = $"{preset.SystemMessage} - system msg of {request.PresetId}",
-                UserMessage = $"{preset.UserMessage} {request.MainPrompt}"
+                SystemMessage = prompt.SystemMessage,
+                UserMessage = prompt.UserMessage,
             }, cancellationToken);
 
-            return new Story()
+            var story = _context.Stories.Add(new()
             {
-                Id = 2137,
                 Preset = preset.PresetId,
                 Model = output.Model,
                 Completion = output.Completion,
-            };
+                PromptParts = request.PromptParts.ToList(),
+                MainPrompt = request.MainPrompt,
+            }).Entity;
+
+            await _context.SaveChangesAsync(cancellationToken);
+            
+            return story;
         }
     }
 
