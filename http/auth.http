@@ -1,0 +1,29 @@
+﻿### Reset token globals
+GET http://localhost:5104/
+
+> {%
+    client.global.set("access_token", "");
+    client.global.set("refresh_token", "");
+%}
+
+### Login - save token in globals
+POST http://localhost:5104/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@test.pl",
+  "password": "test1234"
+}
+
+> {%
+    const accessToken = response.body.accessToken;
+    const refreshToken = response.body.refreshToken;
+    client.log(`Access token: ${accessToken}`);
+    client.log(`Refresh token: ${refreshToken}`);
+    client.global.set("access_token", accessToken);
+    client.global.set("refresh_token", refreshToken);
+%}
+
+### Get current user using token
+GET http://localhost:5104/api/Story/user
+Authorization: Bearer {{access_token}}

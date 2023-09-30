@@ -2,6 +2,7 @@
 <project version="4">
   <component name="UserContentModel">
     <attachedFolders>
+      <Path>http</Path>
       <Path>src/frontend-example</Path>
       <Path>test</Path>
     </attachedFolders>

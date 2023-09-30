@@ -1,9 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Auth.Entities;
 using Domain.Common;
 
 namespace Domain.Stories.Entities;
 
 public class Story : BaseEntity {
+    
+    public virtual User User { get; set; }
 
     public string Preset { get; set; }
 

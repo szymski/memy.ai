@@ -1,4 +1,4 @@
-﻿using Domain.Common;
+﻿using System.Runtime.CompilerServices;
 
 namespace Domain.Stories.Entities; 
 
@@ -9,9 +9,12 @@ public class StoryPreset /*: BaseEntity*/ {
     
     public string Name { get; set; }
     
-    public string SystemMessage { get; set; }
+    public required string SystemMessage { get; set; }
     
-    public string UserMessage { get; set; }
+    public required string UserMessage { get; set; }
     
-        
+    // [Column(TypeName = "json")]
+    // public List<string> PromptParts { get; set; }
+    
+    // public string MainPrompt { get; set; }
 }

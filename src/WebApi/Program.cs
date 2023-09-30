@@ -1,13 +1,16 @@
 using System.Reflection;
 using Application;
-using Application.Stories.Queries;
+using Domain.Auth.Entities;
 using Domain.Stories.Interfaces;
 using Infrastructure;
 using Infrastructure.Data;
 using Mapster;
 using Mapster.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Presentation;
 using Serilog;
+using WebApi.Auth.Services;
 using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +28,7 @@ builder.Services.AddSwaggerGen(c => {
         Title = "MemyAi",
         Version = "v1",
     });
-    
+
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
@@ -35,6 +38,28 @@ builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddPresentation();
 
+builder.Services.AddScoped<CurrentUserAccessor>();
+
+builder.Services.AddAuthentication(o => {
+        o.DefaultAuthenticateScheme = IdentityConstants.BearerScheme;
+    })
+    .AddBearerToken(IdentityConstants.BearerScheme);
+
+builder.Services.AddAuthorizationBuilder()
+    .AddDefaultPolicy("", new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .AddAuthenticationSchemes(IdentityConstants.BearerScheme)
+        .Build());
+
+builder.Services
+    .AddIdentity<User, IdentityRole<int>>(o => {
+        o.User.RequireUniqueEmail = true;
+        o.Password.RequireNonAlphanumeric = false;
+        o.Password.RequireUppercase = false;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddApiEndpoints();
+
 builder.Services.AddMapster();
 
 var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
@@ -42,7 +67,10 @@ var assembly = Assembly.GetExecutingAssembly();
 typeAdapterConfig.ScanInheritedTypes(assembly);
 
 builder.Host
-    .UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+    .UseSerilog((
+        context,
+        configuration
+    ) => configuration.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 
@@ -63,7 +91,10 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGroup("api/auth").MapIdentityApi<User>();
 
 app.MapControllers();
 

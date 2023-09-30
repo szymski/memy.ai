@@ -1,55 +1,77 @@
-﻿using Domain.Stories.Entities;
+﻿using Domain.Auth.Entities;
+using Domain.Stories.Entities;
 using Domain.Stories.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Data;
 
-public class AppDbContextInitializer {
-    private readonly ILogger<AppDbContextInitializer> _logger;
-    private readonly AppDbContext _context;
-
-    public AppDbContextInitializer(
-        ILogger<AppDbContextInitializer> logger,
-        AppDbContext context)
-    {
-        _logger = logger;
-        _context = context;
-    }
+public class AppDbContextInitializer(
+    ILogger<AppDbContextInitializer> logger,
+    AppDbContext context,
+    UserManager<User> userManager) {
 
     public async Task Initialize()
     {
-        _logger.LogInformation("Initializing database...");
+        logger.LogInformation("Initializing database...");
 
-        _logger.LogInformation("Recreating the database...");
-        
-        await _context.Database.EnsureDeletedAsync();
-        await _context.Database.EnsureCreatedAsync();
-        await _context.Database.MigrateAsync();
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
+        await context.Database.MigrateAsync();
     }
 
     public async Task Seed()
     {
-        _logger.LogInformation("Seeding database...");
+        logger.LogInformation("Seeding database...");
 
-        if (await _context.Stories.AnyAsync() == false)
+        #region Users
+
+        var user1 = new User()
         {
-            _context.Stories.Add(new()
+            Email = "test@test.pl",
+        };
+        {
+            var result = await userManager.CreateAsync(user1, "test1234");
+            if (!result.Succeeded)
+                throw new($"Failed to create user: {result.Errors.Select(x => x.Description).Aggregate((a, b) => $"{a}, {b}")}");
+        }
+
+        var user2 = new User()
+        {
+            Email = "a@a.pl",
+        };
+        {
+            var result = await userManager.CreateAsync(user2, "test1234");
+            if (!result.Succeeded)
+                throw new($"Failed to create user: {result.Errors.Select(x => x.Description).Aggregate((a, b) => $"{a}, {b}")}");
+        }
+
+        #endregion
+
+        #region Stories
+
+        if (await context.Stories.AnyAsync() == false)
+        {
+            context.Stories.Add(new()
             {
+                User = user1,
                 Model = StoryGeneratorModel.Gpt35Turbo.ToString(),
                 Preset = "Story 1",
                 Completion = "Completion 1",
                 MainPrompt = "prompcik 1",
             });
-            _context.Stories.Add(new()
+            context.Stories.Add(new()
             {
+                User = user2,
                 Model = StoryGeneratorModel.Gpt4.ToString(),
                 Preset = "Story 2",
                 Completion = "Sratata",
                 MainPrompt = "drugi",
             });
-            _context.Stories.Add(new()
+            context.Stories.Add(new()
             {
+                User = user1,
                 Model = "Some random model",
                 Preset = "Preset of a story of id 3",
                 Completion = "Historyjka",
@@ -57,6 +79,8 @@ public class AppDbContextInitializer {
             });
         }
 
-        await _context.SaveChangesAsync();
+        #endregion
+
+        await context.SaveChangesAsync();
     }
 }

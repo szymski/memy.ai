@@ -15,19 +15,13 @@ public class GenerateStoryCommand : IRequest<StoryGenerationOutput> {
     public string SystemMessage { get; set; }
     public string UserMessage { get; set; }
 
-    public class GenerateStoryCommandHandler : IRequestHandler<GenerateStoryCommand, StoryGenerationOutput> {
-        private readonly IStoryGenerator _generator;
-
-        public GenerateStoryCommandHandler(IStoryGenerator generator, StoryPromptBuilder builder)
-        {
-            _generator = generator;
-        }
+    public class GenerateStoryCommandHandler(IStoryGenerator generator) : IRequestHandler<GenerateStoryCommand, StoryGenerationOutput> {
 
         public async Task<StoryGenerationOutput> Handle(GenerateStoryCommand request, CancellationToken cancellationToken)
         {
             var input = new StoryGenerationInput(request.Model, request.SystemMessage, request.UserMessage);
             Log.Logger.Warning("Got request to generate story {@input}", input);
-            var story = await _generator.Generate(input);
+            var story = await generator.Generate(input);
             return story;
         }
     }

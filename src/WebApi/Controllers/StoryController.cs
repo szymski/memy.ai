@@ -1,13 +1,12 @@
 using Application.Stories.Commands;
 using Application.Stories.Queries;
 using Domain.Stories.Entities;
-using Domain.Stories.Enums;
-using Domain.Stories.ValueObjects;
 using Mapster;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using WebApi.Auth.Services;
 using WebApi.Controllers.Models;
 using WebApi.Dto;
 
@@ -16,10 +15,25 @@ namespace WebApi.Controllers {
     [ApiController]
     public class StoryController : ControllerBase {
         private readonly IMediator _mediator;
+        private readonly CurrentUserAccessor _currentUserAccessor;
 
-        public StoryController(IMediator mediator)
+        public StoryController(
+            IMediator mediator,
+            CurrentUserAccessor currentUserAccessor
+        )
         {
             _mediator = mediator;
+            _currentUserAccessor = currentUserAccessor;
+        }
+
+        [HttpGet("user")]
+        [Authorize]
+        public async ValueTask<ActionResult> GetUser()
+        {
+            if(!_currentUserAccessor.IsAuthenticated)
+                return Ok("Not authenticated");
+
+            return Ok(_currentUserAccessor.User);
         }
 
         /// <summary>
@@ -37,7 +51,9 @@ namespace WebApi.Controllers {
         /// Gets story by id.
         /// </summary>
         [HttpGet("{id}")]
-        public async ValueTask<ActionResult<StoryDto>> GetById(int id)
+        public async ValueTask<ActionResult<StoryDto>> GetById(
+            int id
+        )
         {
             var result = await _mediator.Send(new GetStoryQuery(id));
             if (result is null) return NotFound();
@@ -50,7 +66,9 @@ namespace WebApi.Controllers {
         /// <param name="requestDto"></param>
         [HttpPost("generate")]
         [Consumes(typeof(GenerateStoryRequestDto), "application/json")]
-        public async ValueTask<ActionResult<Story>> Generate(GenerateStoryRequestDto requestDto)
+        public async ValueTask<ActionResult<Story>> Generate(
+            GenerateStoryRequestDto requestDto
+        )
         {
             Log.Logger.Warning("Received generate story request: {@requestDto}", requestDto);
 

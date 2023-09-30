@@ -16,43 +16,32 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
     public IEnumerable<string> PromptParts { get; init; }
     public string MainPrompt { get; init; }
 
-    public class GenerateFromPresetRequestCommandHandler : DbRequestHandler, IRequestHandler<GenerateFromPresetRequestCommand, Story> {
-        private readonly IMediator _mediator;
-        private readonly IAppDbContext _context;
-        private readonly IStoryPresetStore _presetStore;
-        private readonly StoryPromptBuilder _builder;
-
-        public GenerateFromPresetRequestCommandHandler(
+    public class GenerateFromPresetRequestCommandHandler(
             IMediator mediator,
             IAppDbContext context,
             IStoryPresetStore presetStore,
             StoryPromptBuilder builder)
-        {
-            _mediator = mediator;
-            _context = context;
-            _presetStore = presetStore;
-            _builder = builder;
-        }
+        : DbRequestHandler, IRequestHandler<GenerateFromPresetRequestCommand, Story> {
 
         public async Task<Story> Handle(GenerateFromPresetRequestCommand request, CancellationToken cancellationToken)
         {
             // TODO: Disallow generating multiple stories at the same time or add rate limiter
-            
-            var preset = _presetStore.GetById(request.PresetId)!;
+
+            var preset = presetStore.GetById(request.PresetId)!;
             if (preset is null)
                 throw new ArgumentException($"No such preset '{request.PresetId}'");
             Log.Logger.Information("Got request to generate story using preset {@preset}", preset);
 
-            var prompt = _builder.BuildPrompt(preset, request.PromptParts.ToArray(), request.MainPrompt);
+            var prompt = builder.BuildPrompt(preset, request.PromptParts.ToArray(), request.MainPrompt);
 
-            var output = await _mediator.Send(new GenerateStoryCommand()
+            var output = await mediator.Send(new GenerateStoryCommand()
             {
                 Model = StoryGeneratorModel.Gpt35Turbo,
                 SystemMessage = prompt.SystemMessage,
                 UserMessage = prompt.UserMessage,
             }, cancellationToken);
 
-            var story = _context.Stories.Add(new()
+            var story = context.Stories.Add(new()
             {
                 Preset = preset.PresetId,
                 Model = output.Model,
@@ -61,8 +50,8 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
                 MainPrompt = request.MainPrompt,
             }).Entity;
 
-            await _context.SaveChangesAsync(cancellationToken);
-            
+            await context.SaveChangesAsync(cancellationToken);
+
             return story;
         }
     }

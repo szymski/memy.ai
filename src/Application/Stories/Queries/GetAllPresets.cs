@@ -13,9 +13,11 @@ public record GetAllPresetsQuery : IRequest<IEnumerable<StoryPreset>> {
             _store = store;
         }
 
-        public async Task<IEnumerable<StoryPreset>> Handle(GetAllPresetsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<StoryPreset>> Handle(
+            GetAllPresetsQuery request,
+            CancellationToken cancellationToken)
         {
             return _store.GetAll();
         }
     }
-} 
+}
