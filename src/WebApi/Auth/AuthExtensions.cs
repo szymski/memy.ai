@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
-using Domain.Auth.Entities;
+using Application.Auth.Commands;
+using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,25 +14,19 @@ public static class AuthExtensions {
         string path)
     {
         group.MapPost(path, async Task<Results<Ok, ValidationProblem>> (
-            [FromBody] RegisterRequestDto registration,
-            [FromServices] IServiceProvider sp) => {
-            var userManager = sp.GetRequiredService<UserManager<User>>();
-
-            var userStore = sp.GetRequiredService<IUserStore<User>>();
-            var emailStore = (IUserEmailStore<User>)userStore;
-            var email = registration.Email;
-
-            var user = new User();
-            await userStore.SetUserNameAsync(user, email, CancellationToken.None);
-            await emailStore.SetEmailAsync(user, email, CancellationToken.None);
-            var result = await userManager.CreateAsync(user, registration.Password);
-
+            [FromBody] RegisterRequestDto dto,
+            [FromServices] IMediator mediator) => {
+            var result = await mediator.Send(new RegisterUserCommand()
+            {
+                Email = dto.Email,
+                Password = dto.Password,
+            });
+            
             if (!result.Succeeded)
             {
                 return CreateValidationProblem(result);
             }
 
-            await SendConfirmationEmailAsync(user, userManager, email);
             return TypedResults.Ok();
         });
 
@@ -64,14 +59,5 @@ public static class AuthExtensions {
         }
 
         return TypedResults.ValidationProblem(errorDictionary);
-    }
-
-    // TODO: Implement this
-    private static async Task SendConfirmationEmailAsync(
-        User user,
-        UserManager<User> userManager,
-        string email,
-        bool isChange = false)
-    {
     }
 }
