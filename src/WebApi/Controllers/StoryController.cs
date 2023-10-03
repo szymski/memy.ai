@@ -12,6 +12,7 @@ using WebApi.Dto;
 
 namespace WebApi.Controllers {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class StoryController : ControllerBase {
         private readonly IMediator _mediator;
@@ -27,7 +28,7 @@ namespace WebApi.Controllers {
         }
 
         [HttpGet("user")]
-        [Authorize]
+        [AllowAnonymous]
         public async ValueTask<ActionResult> GetUser()
         {
             if(!_currentUserAccessor.IsAuthenticated)
@@ -43,7 +44,10 @@ namespace WebApi.Controllers {
         [HttpGet]
         public async ValueTask<ActionResult<List<StoryDto>>> Get()
         {
-            var result = await _mediator.Send(new GetAllStoriesQuery());
+            var result = await _mediator.Send(new GetAllStoriesQuery()
+            {
+                UserId = _currentUserAccessor.User.Id,
+            });
             return Ok(result.Adapt<List<StoryDto>>());
         }
 
@@ -55,7 +59,10 @@ namespace WebApi.Controllers {
             int id
         )
         {
-            var result = await _mediator.Send(new GetStoryQuery(id));
+            var result = await _mediator.Send(new GetStoryQuery(id)
+            {
+                UserId = _currentUserAccessor.User.Id,
+            });
             if (result is null) return NotFound();
             return Ok(result.Adapt<StoryDto>());
         }
@@ -66,6 +73,7 @@ namespace WebApi.Controllers {
         /// <param name="requestDto"></param>
         [HttpPost("generate")]
         [Consumes(typeof(GenerateStoryRequestDto), "application/json")]
+        [AllowAnonymous]
         public async ValueTask<ActionResult<Story>> Generate(
             GenerateStoryRequestDto requestDto
         )
@@ -86,6 +94,7 @@ namespace WebApi.Controllers {
         /// Returns all available presets for story generation.
         /// </summary>
         [HttpGet("presets")]
+        [AllowAnonymous]
         public async ValueTask<ActionResult<IEnumerable<StoryPresetDto>>> GetPresets()
         {
             var result = await _mediator.Send(new GetAllPresetsQuery());

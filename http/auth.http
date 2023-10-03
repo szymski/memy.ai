@@ -22,8 +22,14 @@ Content-Type: application/json
     client.log(`Refresh token: ${refreshToken}`);
     client.global.set("access_token", accessToken);
     client.global.set("refresh_token", refreshToken);
+    request.environment
 %}
 
 ### Get current user using token
 GET http://localhost:5104/api/Story/user
 Authorization: Bearer {{access_token}}
+
+### Story - get all 
+GET http://localhost:5104/api/Story
+Authorization: Bearer {{access_token}}
+

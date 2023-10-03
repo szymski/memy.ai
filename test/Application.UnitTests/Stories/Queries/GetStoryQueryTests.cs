@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Application.Stories.Queries;
 using Application.UnitTests.Helpers;
+using Domain.Auth.Entities;
 using Domain.Stories.Entities;
 
 namespace Application.UnitTests.Stories.Queries; 
@@ -18,6 +19,10 @@ public class GetStoryQueryTests {
                 Id = 5,
                 Preset = "test_preset",
                 Model = "mdl",
+                User = new()
+                {
+                    Id = 3,
+                }
             },
         };
         var dbSetMock = DbHelper.GetMockDbSet(stories);
@@ -25,7 +30,10 @@ public class GetStoryQueryTests {
         contextMock.Setup(c => c.Stories)
             .Returns(() => dbSetMock.Object);
 
-        var command = new GetStoryQuery(5);
+        var command = new GetStoryQuery(5)
+        {
+            UserId = 3,
+        };
         var handler = new GetStoryQuery.GetStoryQueryHandler();
         handler.Context = contextMock.Object;
         

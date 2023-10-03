@@ -18,12 +18,30 @@ public class GetAllStoriesQueryTests {
                 Id = 3,
                 Preset = "preset3",
                 Model = "mdl3",
+                User = new()
+                {
+                    Id = 1,
+                },
+            },
+            new()
+            {
+                Id = 7,
+                Preset = "a",
+                Model = "a",
+                User = new()
+                {
+                    Id = 2,
+                },
             },
             new()
             {
                 Id = 5,
                 Preset = "test_preset",
                 Model = "mdl",
+                User = new()
+                {
+                    Id = 1,
+                },
             },
         };
         var dbSetMock = DbHelper.GetMockDbSet(stories);
@@ -31,7 +49,10 @@ public class GetAllStoriesQueryTests {
         contextMock.Setup(c => c.Stories)
             .Returns(() => dbSetMock.Object);
 
-        var command = new GetAllStoriesQuery();
+        var command = new GetAllStoriesQuery()
+        {
+            UserId = 1,
+        };
         var handler = new GetAllStoriesQuery.GetAllStoriesQueryHandler();
         handler.Context = contextMock.Object;
         

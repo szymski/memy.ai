@@ -1,0 +1,11 @@
+﻿### Get current user using token
+GET http://localhost:5104/api/Story/user
+Authorization: Bearer {{access_token}}
+
+### Story - get all 
+GET http://localhost:5104/api/Story
+Authorization: Bearer {{access_token}}
+
+### Story - get by id
+GET http://localhost:5104/api/Story/3
+Authorization: Bearer {{access_token}}
