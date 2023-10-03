@@ -1,6 +1,6 @@
 ﻿using Application.Auth.Commands;
 using Application.Auth.Queries;
-using Domain.Auth.Entities;
+using Application.Common.Interfaces;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +17,8 @@ namespace WebApi.Controllers;
 [ApiController]
 public class AccountController(
     IMediator mediator,
-    CurrentUserAccessor currentUserAccessor) : Controller {
+    CurrentUserAccessor currentUserAccessor,
+    IAppDbContext context) : Controller {
     [HttpGet]
     public async ValueTask<ActionResult> GetMyAccount()
     {
@@ -40,16 +41,48 @@ public class AccountController(
         var patchedAccountDto = user.Adapt<AccountPatchRequestDto>();
         
         patch.ApplyTo(patchedAccountDto);
-
-        if (accountDto.DisplayName != patchedAccountDto.DisplayName)
-            await mediator.Send(new UpdateUserDisplayNameCommand()
-            {
-                UserId = user.Id,
-                DisplayName = patchedAccountDto.DisplayName,
-            });
         
-        // TODO: Update password
-        // TODO: Update email
+        await using var transaction = context.BeginTransaction();
+
+        try
+        {
+            if (accountDto.DisplayName != patchedAccountDto.DisplayName)
+                await mediator.Send(new UpdateUserDisplayNameCommand()
+                {
+                    UserId = user.Id,
+                    DisplayName = patchedAccountDto.DisplayName,
+                });
+
+            if (accountDto.Password != patchedAccountDto.Password)
+            {
+                var result = await mediator.Send(new UpdateUserPasswordCommand()
+                {
+                    UserId = user.Id,
+                    Password = patchedAccountDto.Password,
+                });
+                if (!result)
+                    throw new("Failed to change password.");
+            }
+
+            if (accountDto.Email != patchedAccountDto.Email)
+            {
+                var result = await mediator.Send(new UpdateUserEmailCommand()
+                {
+                    UserId = user.Id,
+                    Email = patchedAccountDto.Email!,
+                    Transaction = transaction,
+                });
+                if (!result)
+                    throw new("Failed to change email.");
+            }
+            
+            await transaction.CommitAsync();
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            return BadRequest(e.Message);
+        }
 
         return Ok();
     }

@@ -2,11 +2,87 @@
 GET http://localhost:5104/api/Account
 Authorization: Bearer {{access_token}}
 
-### Patch
+### Patch display name
 PATCH http://localhost:5104/api/Account
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 [
-    { "op": "replace", "path": "/displayName", "value": "New display name!" }
+  {
+    "op": "replace",
+    "path": "/displayName",
+    "value": "New display name!"
+  }
+]
+
+### Patch password
+PATCH http://localhost:5104/api/Account
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+[
+  {
+    "op": "replace",
+    "path": "/password",
+    "value": "xd1234"
+  }
+]
+
+### Patch email
+PATCH http://localhost:5104/api/Account
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+[
+  {
+    "op": "replace",
+    "path": "/email",
+    "value": "xd1234@a.pl"
+  }
+]
+
+### Patch all
+PATCH http://localhost:5104/api/Account
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+[
+  {
+    "op": "replace",
+    "path": "/displayName",
+    "value": "Updated name"
+  },
+  {
+    "op": "replace",
+    "path": "/email",
+    "value": "updated@test.pl"
+  },
+  {
+    "op": "replace",
+    "path": "/password",
+    "value": "updatedpwd1234"
+  }
+]
+
+### Patch all - one invalid
+PATCH http://localhost:5104/api/Account
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+[
+  {
+    "op": "replace",
+    "path": "/displayName",
+    "value": "Updated name2"
+  },
+  {
+    "op": "replace",
+    "path": "/email",
+    "value": "updated@test.pl"
+  },
+  {
+    "op": "replace",
+    "path": "/password",
+    "value": "a"
+  }
 ]

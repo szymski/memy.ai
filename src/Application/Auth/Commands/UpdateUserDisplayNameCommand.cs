@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Messaging;
 using Application.Common.Interfaces;
 using Domain.Auth.Entities;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,14 @@ public record UpdateUserDisplayNameCommand : IRequest<User> {
                 await Context.SaveChangesAsync(cancellationToken);
             }
             return user;
+        }
+    }
+
+    public class UpdateUserDisplayNameCommandValidator : AbstractValidator<UpdateUserDisplayNameCommand> {
+        public UpdateUserDisplayNameCommandValidator()
+        {
+            RuleFor(x => x.DisplayName)
+                .MaximumLength(30);
         }
     }
 }

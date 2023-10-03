@@ -1,6 +1,10 @@
-﻿namespace WebApi.Controllers.Models;
+﻿using Mapster;
+
+namespace WebApi.Controllers.Models;
 
 public class AccountPatchRequestDto {
+    public string? Email { get; set; }
     public string? DisplayName { get; set; }
-    public string Password { get; set; }
+    [AdaptMember("PasswordHash")]
+    public string? Password { get; set; }
 }
