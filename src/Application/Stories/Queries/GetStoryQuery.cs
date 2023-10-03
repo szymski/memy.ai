@@ -13,6 +13,7 @@ public record GetStoryQuery(int Id) : IRequest<Story?> {
         {
             var story = await Context.Stories
                 .Where(s => s.User.Id == request.UserId)
+                .Include(s => s.User)
                 .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
             return story;
         }

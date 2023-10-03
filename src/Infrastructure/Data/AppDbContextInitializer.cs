@@ -30,6 +30,7 @@ public class AppDbContextInitializer(
         var user1 = new User()
         {
             Email = "test@test.pl",
+            DisplayName = "First user"
         };
         {
             var result = await userManager.CreateAsync(user1, "test1234");

@@ -8,6 +8,7 @@ using Domain.Stories.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -21,7 +22,6 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
 
     public class GenerateFromPresetRequestCommandHandler(
             IMediator mediator,
-            IAppDbContext context,
             IStoryPresetStore presetStore,
             StoryPromptBuilder builder)
         : DbRequestHandler, IRequestHandler<GenerateFromPresetRequestCommand, Story> {
@@ -35,7 +35,7 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
                 throw new ArgumentException($"No such preset '{request.PresetId}'");
             Log.Logger.Information("Got request to generate story using preset {@preset}", preset);
 
-            var user = await context.Users.FindAsync(request.UserId);
+            var user = await Context.Users.SingleAsync(u => u.Id == request.UserId);
             
             var prompt = builder.BuildPrompt(preset, request.PromptParts.ToArray(), request.MainPrompt);
 
@@ -46,7 +46,7 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
                 UserMessage = prompt.UserMessage,
             }, cancellationToken);
 
-            var story = context.Stories.Add(new()
+            var story = Context.Stories.Add(new()
             {
                 User = user,
                 Preset = preset.PresetId,
@@ -56,7 +56,7 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
                 MainPrompt = request.MainPrompt,
             }).Entity;
 
-            await context.SaveChangesAsync(cancellationToken);
+            await Context.SaveChangesAsync(cancellationToken);
 
             return story;
         }

@@ -1,0 +1,12 @@
+﻿### Get my account
+GET http://localhost:5104/api/Account
+Authorization: Bearer {{access_token}}
+
+### Patch
+PATCH http://localhost:5104/api/Account
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+[
+    { "op": "replace", "path": "/displayName", "value": "New display name!" }
+]

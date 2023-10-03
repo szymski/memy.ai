@@ -27,16 +27,6 @@ namespace WebApi.Controllers {
             _currentUserAccessor = currentUserAccessor;
         }
 
-        [HttpGet("user")]
-        [AllowAnonymous]
-        public async ValueTask<ActionResult> GetUser()
-        {
-            if(!_currentUserAccessor.IsAuthenticated)
-                return Ok("Not authenticated");
-
-            return Ok(_currentUserAccessor.User);
-        }
-
         /// <summary>
         /// Gets all stories.
         /// </summary>

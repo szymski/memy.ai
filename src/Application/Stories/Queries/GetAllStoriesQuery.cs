@@ -13,6 +13,7 @@ public record GetAllStoriesQuery : IRequest<IEnumerable<Story>> {
         {
             var stories = await Context.Stories
                 .Where(s => s.User.Id == request.UserId)
+                .Include(s => s.User)
                 .ToArrayAsync(cancellationToken: cancellationToken);
             return stories;
         }

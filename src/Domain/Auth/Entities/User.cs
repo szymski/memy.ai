@@ -25,6 +25,8 @@ public class User : IdentityUser<int> {
             base.UserName = value;
         }
     }
+    
+    public string? DisplayName { get; set; }
 
     public virtual IList<Story> Stories { get; set; }
 }

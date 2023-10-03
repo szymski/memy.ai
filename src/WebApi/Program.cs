@@ -10,12 +10,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Presentation;
 using Serilog;
 using WebApi.Auth;
 using WebApi.Auth.Services;
 using WebApi.Controllers.Models;
 using WebApi.Services;
+using WebApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +25,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options => {
     options.Filters.Add<FluentValidationExceptionFilter>();
-});
+    options.InputFormatters.Insert(0, MyJsonPatchInputFormatter.GetJsonPatchInputFormatter());
+})
+    .AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
