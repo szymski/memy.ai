@@ -9,3 +9,14 @@ Authorization: Bearer {{access_token}}
 ### Story - get by id
 GET http://localhost:5104/api/Story/3
 Authorization: Bearer {{access_token}}
+
+### Story - generate
+POST http://localhost:5104/api/Story/generate
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "preset": "fanatyk",
+  "mainPrompt": "dupka",
+  "promptParts": []
+}

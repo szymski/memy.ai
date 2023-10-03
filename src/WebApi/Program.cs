@@ -7,10 +7,14 @@ using Infrastructure.Data;
 using Mapster;
 using Mapster.Utils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Presentation;
 using Serilog;
+using WebApi.Auth;
 using WebApi.Auth.Services;
+using WebApi.Controllers.Models;
 using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -94,7 +98,19 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGroup("api/auth").MapIdentityApi<User>();
+var authGroup = app.MapGroup("api/auth");
+authGroup
+    .MapIdentityApi<User>()
+    // Temporary patch to remove /register route
+    .AddEndpointFilter(async (
+        context,
+        @delegate) => {
+        if (context.HttpContext.Request.Path.Value is "/api/auth/register" or "/api/auth/forgotPassword" or "/api/auth/resetPassword")
+            return Results.NotFound();
+        return await @delegate(context);
+    });
+
+authGroup.MapRegisterRoute("/register2");
 
 app.MapControllers();
 

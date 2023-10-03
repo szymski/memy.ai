@@ -73,7 +73,6 @@ namespace WebApi.Controllers {
         /// <param name="requestDto"></param>
         [HttpPost("generate")]
         [Consumes(typeof(GenerateStoryRequestDto), "application/json")]
-        [AllowAnonymous]
         public async ValueTask<ActionResult<Story>> Generate(
             GenerateStoryRequestDto requestDto
         )
@@ -82,11 +81,12 @@ namespace WebApi.Controllers {
 
             var result = await _mediator.Send(new GenerateFromPresetRequestCommand()
             {
+                UserId = _currentUserAccessor.User.Id,
                 PresetId = requestDto.Preset,
                 PromptParts = requestDto.PromptParts,
                 MainPrompt = requestDto.MainPrompt,
             });
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result.Adapt<StoryDto>());
         }
 
 

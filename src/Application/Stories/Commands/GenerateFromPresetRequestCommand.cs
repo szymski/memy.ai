@@ -1,17 +1,20 @@
 ﻿using Application.Abstractions.Messaging;
 using Application.Common.Interfaces;
+using Domain.Auth.Entities;
 using Domain.Stories.Entities;
 using Domain.Stories.Enums;
 using Domain.Stories.Interfaces;
 using Domain.Stories.Services;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace Application.Stories.Commands;
 
 public class GenerateFromPresetRequestCommand : IRequest<Story> {
+    public required int UserId { get; init; }
     public string PresetId { get; init; }
     public IEnumerable<string> PromptParts { get; init; }
     public string MainPrompt { get; init; }
@@ -32,6 +35,8 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
                 throw new ArgumentException($"No such preset '{request.PresetId}'");
             Log.Logger.Information("Got request to generate story using preset {@preset}", preset);
 
+            var user = await context.Users.FindAsync(request.UserId);
+            
             var prompt = builder.BuildPrompt(preset, request.PromptParts.ToArray(), request.MainPrompt);
 
             var output = await mediator.Send(new GenerateStoryCommand()
@@ -43,6 +48,7 @@ public class GenerateFromPresetRequestCommand : IRequest<Story> {
 
             var story = context.Stories.Add(new()
             {
+                User = user,
                 Preset = preset.PresetId,
                 Model = output.Model,
                 Completion = output.Completion,

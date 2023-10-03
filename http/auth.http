@@ -25,6 +25,52 @@ Content-Type: application/json
     request.environment
 %}
 
+### Login - user 2
+POST http://localhost:5104/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ab@ab.pl",
+  "password": "test1234"
+}
+
+> {%
+    const accessToken = response.body.accessToken;
+    const refreshToken = response.body.refreshToken;
+    client.log(`Access token: ${accessToken}`);
+    client.log(`Refresh token: ${refreshToken}`);
+    client.global.set("access_token", accessToken);
+    client.global.set("refresh_token", refreshToken);
+    request.environment
+%}
+
+### Register
+POST http://localhost:5104/api/auth/register2
+Content-Type: application/json
+
+{
+  "email": "ab@ab.pl",
+  "password": "test1234"
+}
+
+### Register - OLD
+POST http://localhost:5104/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@test.pl",
+  "password": "test1234"
+}
+
+### Password reset - OLD
+POST http://localhost:5104/api/auth/forgotPassword
+Content-Type: application/json
+
+{
+  "email": "test@test.pl",
+  "password": "test1234"
+}
+
 ### Get current user using token
 GET http://localhost:5104/api/Story/user
 Authorization: Bearer {{access_token}}
