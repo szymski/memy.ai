@@ -1,4 +1,6 @@
 ﻿using Domain.Auth.Entities;
+using Domain.Credits.Entities;
+using Domain.Credits.Enums;
 using Domain.Stories.Entities;
 using Domain.Stories.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +32,15 @@ public class AppDbContextInitializer(
         var user1 = new User()
         {
             Email = "test@test.pl",
-            DisplayName = "First user"
+            DisplayName = "First user",
+            CreditEvents = new List<CreditEvent>()
+            {
+                new()
+                {
+                    Type = CreditEventType.Seed,
+                    Amount = 10,
+                }
+            }
         };
         {
             var result = await userManager.CreateAsync(user1, "test1234");

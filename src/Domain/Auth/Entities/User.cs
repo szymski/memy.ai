@@ -1,4 +1,5 @@
-﻿using Domain.Stories.Entities;
+﻿using Domain.Credits.Entities;
+using Domain.Stories.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Auth.Entities;
@@ -29,4 +30,5 @@ public class User : IdentityUser<int> {
     public string? DisplayName { get; set; }
 
     public virtual IList<Story> Stories { get; set; }
+    public virtual IList<CreditEvent> CreditEvents { get; set; }
 }

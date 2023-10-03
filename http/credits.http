@@ -1,0 +1,7 @@
+﻿### Get my account
+GET http://localhost:5104/api/Credits/balance
+Authorization: Bearer {{access_token}}
+
+### Get events
+GET http://localhost:5104/api/Credits/events
+Authorization: Bearer {{access_token}}

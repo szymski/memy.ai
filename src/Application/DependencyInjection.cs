@@ -2,6 +2,7 @@
 using Application.Abstractions.Messaging;
 using Application.Common.Messaging.Behaviors;
 using Application.Stories.Queries;
+using Domain.Credits.Services;
 using Domain.Stories.Entities;
 using Domain.Stories.Services;
 using FluentValidation;
@@ -31,6 +32,8 @@ public static class DependencyInjection {
         #endregion
 
         services.AddScoped<StoryPromptBuilder>();
+
+        services.AddScoped<CreditService>();
 
         return services;
     }

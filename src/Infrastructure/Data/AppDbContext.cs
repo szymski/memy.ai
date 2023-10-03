@@ -2,6 +2,7 @@
 using System.Reflection;
 using Application.Common.Interfaces;
 using Domain.Auth.Entities;
+using Domain.Credits.Entities;
 using Domain.Stories.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace Infrastructure.Data;
 public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>, IAppDbContext {
 
     public DbSet<Story> Stories { get; set; }
+    public DbSet<CreditEvent> CreditEvents { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -28,6 +30,11 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>, IAp
         mb.Entity<Story>()
             .HasOne(s => s.User)
             .WithMany(u => u.Stories)
+            .IsRequired();
+
+        mb.Entity<CreditEvent>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.CreditEvents)
             .IsRequired();
     }
 

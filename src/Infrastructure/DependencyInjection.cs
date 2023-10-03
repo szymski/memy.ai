@@ -1,7 +1,9 @@
 ﻿using Application.Common.Interfaces;
 using Application.Stories;
+using Domain.Credits.Interfaces;
 using Domain.Stories.Entities;
 using Domain.Stories.Interfaces;
+using Infrastructure.Credits.Services;
 using Infrastructure.Data;
 using Infrastructure.Data.Stories;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +59,8 @@ public static class DependencyInjection {
         #endregion
 
         services.AddScoped<IStoryGenerator, TestStoryGenerator>();
+
+        services.AddScoped<ICreditRepository, CreditRepository>();
 
         return services;
     }
