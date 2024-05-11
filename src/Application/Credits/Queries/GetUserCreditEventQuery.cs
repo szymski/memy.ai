@@ -17,8 +17,7 @@ public record GetUserCreditEventsQuery : IRequest<IEnumerable<CreditEvent>> {
             GetUserCreditEventsQuery request,
             CancellationToken cancellationToken)
         {
-            var user = await Context.Users.FindAsync(request.UserId);
-            return await creditService.GetEvents(user);
+            return await creditService.GetEvents(request.UserId);
         }
 
     }

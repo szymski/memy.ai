@@ -1,7 +1,7 @@
 ﻿### Get current user using token
 GET http://localhost:5104/api/Story/user
 Authorization: Bearer {{access_token}}
-
+ 
 ### Story - get all 
 GET http://localhost:5104/api/Story
 Authorization: Bearer {{access_token}}
@@ -16,7 +16,21 @@ Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 {
-  "preset": "fanatyka",
+  "preset": "fanatyk",
   "mainPrompt": "dupka",
   "promptParts": []
 }
+
+### Story - generate for free
+POST http://localhost:5104/api/Story/generate?free=true
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "preset": "fanatyk",
+  "mainPrompt": "dupka",
+  "promptParts": []
+}
+
+### Story - presets
+GET http://localhost:5104/api/Story/presets

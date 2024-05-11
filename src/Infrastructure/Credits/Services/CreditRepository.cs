@@ -9,19 +9,20 @@ namespace Infrastructure.Credits.Services;
 
 public class CreditRepository(
     IAppDbContext context) : ICreditRepository {
-    public async Task<IEnumerable<CreditEvent>> GetCreditEvents(User user)
+    public async Task<IEnumerable<CreditEvent>> GetCreditEvents(int userId)
     {
         return await context.CreditEvents
-            .Where(c => c.User == user)
+            .Where(c => c.User.Id == userId)
             .OrderByDescending(c => c.CreatedAt)
             .ToArrayAsync();
     }
 
     public async Task<CreditEvent> AddCreditEvent(
-        User user,
+        int userId,
         CreditEventType type,
         decimal amount)
     {
+        var user = await context.Users.FindAsync(userId);
         var creditEvent = new CreditEvent()
         {
             Type = type,

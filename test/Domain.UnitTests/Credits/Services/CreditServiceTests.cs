@@ -10,7 +10,7 @@ public class CreditServiceTests {
     class CreditRepoMock : ICreditRepository {
         public IList<CreditEvent> CreditEvents { get; set; } = new List<CreditEvent>();
 
-        public async Task<IEnumerable<CreditEvent>> GetCreditEvents(User user)
+        public async Task<IEnumerable<CreditEvent>> GetCreditEvents(int userId)
         {
             return CreditEvents
                 .OrderByDescending(c => c.Id)
@@ -19,7 +19,7 @@ public class CreditServiceTests {
         }
 
         public Task<CreditEvent> AddCreditEvent(
-            User user,
+            int userId,
             CreditEventType type,
             decimal amount)
         {
@@ -43,11 +43,11 @@ public class CreditServiceTests {
         var user = new User();
 
         // when
-        await service.AddCreditEvent(user, CreditEventType.Seed, 1);
-        await service.AddCreditEvent(user, CreditEventType.Used, 2);
+        await service.AddCreditEvent(user.Id, CreditEventType.Seed, 1);
+        await service.AddCreditEvent(user.Id, CreditEventType.Used, 2);
 
         // then
-        var events = await service.GetEvents(user);
+        var events = await service.GetEvents(user.Id);
         Assert.Equal(2, events.Count());
         var ev1 = events.ToArray()[0];
         var ev2 = events.ToArray()[1];
@@ -68,13 +68,13 @@ public class CreditServiceTests {
         var user = new User();
 
         // when
-        await service.AddCreditEvent(user, CreditEventType.Seed, 3);
+        await service.AddCreditEvent(user.Id, CreditEventType.Seed, 3);
 
         // then
-        await service.AddCreditEvent(user, CreditEventType.Used, -1);
+        await service.AddCreditEvent(user.Id, CreditEventType.Used, -1);
         await Assert.ThrowsAsync<Exception>(async () =>
         {
-            await service.AddCreditEvent(user, CreditEventType.Used, -3);
+            await service.AddCreditEvent(user.Id, CreditEventType.Used, -3);
         });
     }
 
@@ -87,11 +87,11 @@ public class CreditServiceTests {
         var user = new User();
 
         // when
-        await service.AddCreditEvent(user, CreditEventType.Seed, 3);
-        await service.AddCreditEvent(user, CreditEventType.Used, -1);
+        await service.AddCreditEvent(user.Id, CreditEventType.Seed, 3);
+        await service.AddCreditEvent(user.Id, CreditEventType.Used, -1);
 
         // then
-        var balance = await service.GetCreditBalance(user);
+        var balance = await service.GetCreditBalance(user.Id);
         Assert.Equal(2, balance);
     }
 }

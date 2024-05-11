@@ -64,9 +64,16 @@ namespace WebApi.Controllers {
         [HttpPost("generate")]
         [Consumes(typeof(GenerateStoryRequestDto), "application/json")]
         public async ValueTask<ActionResult<Story>> Generate(
-            GenerateStoryRequestDto requestDto
+            GenerateStoryRequestDto requestDto,
+            [FromQuery] bool free = false
         )
         {
+            // TODO: Remove free debug flag
+            if (free)
+            {
+                throw new Exception("Yay");
+            }
+            
             Log.Logger.Warning("Received generate story request: {@requestDto}", requestDto);
 
             var result = await _mediator.Send(new GenerateFromPresetRequestCommand()

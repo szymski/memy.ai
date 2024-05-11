@@ -5,6 +5,6 @@ using Domain.Credits.Enums;
 namespace Domain.Credits.Interfaces; 
 
 public interface ICreditRepository {
-    Task<IEnumerable<CreditEvent>> GetCreditEvents(User user);
-    Task<CreditEvent> AddCreditEvent(User user, CreditEventType type, decimal amount);
+    Task<IEnumerable<CreditEvent>> GetCreditEvents(int userId);
+    Task<CreditEvent> AddCreditEvent(int user, CreditEventType type, decimal amount);
 }

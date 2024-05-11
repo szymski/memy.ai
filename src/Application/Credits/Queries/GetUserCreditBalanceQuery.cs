@@ -16,8 +16,7 @@ public record GetUserCreditBalanceQuery : IRequest<decimal> {
             GetUserCreditBalanceQuery request,
             CancellationToken cancellationToken)
         {
-            var user = await Context.Users.FindAsync(request.UserId);
-            return await creditService.GetCreditBalance(user);
+            return await creditService.GetCreditBalance(request.UserId);
         }
 
     }
